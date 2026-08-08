@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="pt-br" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Financeiro e Caixa - OrigoERP</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+  </head>
+  <body class="bg-slate-950 text-gray-100 p-6">
+    <div class="max-w-6xl mx-auto">
+      <!-- Cabeçalho -->
+      <div class="flex justify-between items-center mb-6">
+        <h1 class="text-2xl font-bold text-white">
+          <i class="fa-solid fa-wallet text-emerald-400 mr-2"></i> Financeiro e
+          Caixa
+        </h1>
+        <a href="/dashboard/" class="text-indigo-400 hover:underline text-sm">
+          <i class="fa-solid fa-arrow-left"></i> Voltar ao Dashboard
+        </a>
+      </div>
+
+      <!-- Cards de Métricas -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <!-- Total de Vendas -->
+        <div
+          class="bg-slate-900 p-6 rounded-xl border border-slate-800 shadow-lg"
+        >
+          <div class="flex items-center justify-between">
+            <h3 class="text-gray-400 text-sm font-medium">Total de Vendas</h3>
+            <i class="fa-solid fa-cash-register text-emerald-400 text-xl"></i>
+          </div>
+          <p class="text-2xl font-bold text-emerald-400 mt-2">
+            R$ {{ total_vendas|default:"0.00" }}
+          </p>
+        </div>
+
+        <!-- Caixas Abertos -->
+        <div
+          class="bg-slate-900 p-6 rounded-xl border border-slate-800 shadow-lg"
+        >
+          <div class="flex items-center justify-between">
+            <h3 class="text-gray-400 text-sm font-medium">Caixas Abertos</h3>
+            <i class="fa-solid fa-box-open text-blue-400 text-xl"></i>
+          </div>
+          <p class="text-2xl font-bold text-blue-400 mt-2">
+            {{ caixas_abertos|default:"0" }}
+          </p>
+        </div>
+
+        <!-- Taxa de Serviço (10%) -->
+        <div
+          class="bg-slate-900 p-6 rounded-xl border border-slate-800 shadow-lg"
+        >
+          <div class="flex items-center justify-between">
+            <h3 class="text-gray-400 text-sm font-medium">
+              Total Taxa de Serviço
+            </h3>
+            <i class="fa-solid fa-percent text-amber-400 text-xl"></i>
+          </div>
+          <p class="text-2xl font-bold text-amber-400 mt-2">
+            R$ {{ total_taxa_servico|default:"0.00" }}
+          </p>
+        </div>
+      </div>
+
+      <!-- Atalhos / Seção de Gerenciamento da API -->
+      <div
+        class="bg-slate-900 rounded-xl p-6 shadow-lg border border-slate-800 flex justify-between items-center"
+      >
+        <div>
+          <h3 class="text-lg font-semibold text-white">
+            Gerenciar Registros via API
+          </h3>
+          <p class="text-gray-400 text-sm mt-1">
+            Acesse os endpoints do Django REST Framework para caixas, vendas e
+            rateios.
+          </p>
+        </div>
+        <div class="space-x-3">
+          <a
+            href="/api/financeiro/caixas/"
+            target="_blank"
+            class="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-lg text-sm font-medium transition"
+          >
+            Ver Caixas
+          </a>
+          <a
+            href="/api/financeiro/vendas/"
+            target="_blank"
+            class="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-lg text-sm font-medium transition"
+          >
+            Ver Vendas
+          </a>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

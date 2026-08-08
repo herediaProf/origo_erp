@@ -41,8 +41,15 @@ INSTALLED_APPS = [
     "core",
     "produtos",
     "pedidos",
+    "mesas",
     "rh",
     "financeiro",
+    "estoque",
+    "fornecedores",
+    "clientes",
+    "compras",
+    "relogioponto",
+    "funcionarios",
 ]
 
 MIDDLEWARE = [

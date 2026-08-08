@@ -1,0 +1,324 @@
+<!doctype html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Origo ERP | Painel de Controle</title>
+    <!-- Tailwind CSS CDN para estilização moderna e rápida -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome para Ícones -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              darkBg: "#0f172a",
+              cardBg: "#1e293b",
+              accentGreen: "#10b981",
+              accentBlue: "#3b82f6",
+              accentPurple: "#8b5cf6",
+              accentOrange: "#f59e0b",
+            },
+          },
+        },
+      };
+    </script>
+  </head>
+  <body
+    class="bg-darkBg text-gray-100 font-sans antialiased flex h-screen overflow-hidden"
+  >
+    <!-- SIDEBAR RETRÁTIL -->
+    <aside
+      id="sidebar"
+      class="w-64 bg-cardBg border-r border-gray-800 flex flex-col transition-all duration-300 relative shadow-2xl"
+    >
+      <!-- Logo e Botão de Recolher -->
+      <div
+        class="p-5 flex items-center justify-between border-b border-gray-800"
+      >
+        <div
+          class="flex items-center space-x-3 overflow-hidden"
+          id="logo-container"
+        >
+          <div
+            class="bg-gradient-to-tr from-indigo-600 to-violet-500 p-2 rounded-xl text-white shadow-lg"
+          >
+            <i class="fa-solid fa-cube text-xl"></i>
+          </div>
+          <span
+            class="font-extrabold text-lg tracking-wider text-white whitespace-nowrap"
+            >Origo<span class="text-indigo-400">ERP</span></span
+          >
+        </div>
+        <button
+          onclick="toggleSidebar()"
+          class="text-gray-400 hover:text-white transition p-1 rounded-lg hover:bg-slate-700"
+        >
+          <i class="fa-solid fa-bars-staggered text-lg"></i>
+        </button>
+      </div>
+
+      <!-- Links de Navegação -->
+
+      <!-- Links de Navegação -->
+      <nav class="flex-1 p-4 space-y-2 overflow-y-auto">
+        <a
+          href="/dashboard/"
+          class="flex items-center space-x-3 p-3 rounded-xl bg-indigo-600/20 text-indigo-400 border border-indigo-500/30 transition"
+        >
+          <i class="fa-solid fa-chart-pie w-6 text-center"></i>
+          <span class="nav-text font-medium">Dashboard</span>
+        </a>
+        <a
+          href="/api/produtos/"
+          target="_blank"
+          class="flex items-center space-x-3 p-3 rounded-xl hover:bg-slate-700/50 text-gray-300 hover:text-white transition"
+        >
+          <i
+            class="fa-solid fa-boxes-stacked w-6 text-center text-emerald-400"
+          ></i>
+          <span class="nav-text">Produtos & Estoque</span>
+        </a>
+        <a
+          href="/estoque/itens/"
+          class="flex items-center space-x-3 p-3 rounded-xl hover:bg-slate-700/50 text-gray-300 hover:text-white transition"
+        >
+          <i class="fa-solid fa-warehouse w-6 text-center text-teal-400"></i>
+          <span class="nav-text">Controle de Estoque</span>
+        </a>
+        <a
+          href="/fornecedores/"
+          class="flex items-center space-x-3 p-3 rounded-xl hover:bg-slate-700/50 text-gray-300 hover:text-white transition"
+        >
+          <i class="fa-solid fa-truck-field w-6 text-center text-cyan-400"></i>
+          <span class="nav-text">Fornecedores</span>
+        </a>
+        <a
+          href="/clientes/"
+          class="flex items-center space-x-3 p-3 rounded-xl hover:bg-slate-700/50 text-gray-300 hover:text-white transition"
+        >
+          <i class="fa-solid fa-user-group w-6 text-center text-orange-400"></i>
+          <span class="nav-text">Clientes</span>
+        </a>
+        <a
+          href="/api/pedidos/dashboard/"
+          target="_blank"
+          class="flex items-center space-x-3 p-3 rounded-xl hover:bg-slate-700/50 text-gray-300 hover:text-white transition"
+        >
+          <i class="fa-solid fa-receipt w-6 text-center text-blue-400"></i>
+          <span class="nav-text">Vendas / Pedidos</span>
+        </a>
+        <a
+          href="/api/mesas/"
+          target="_blank"
+          class="flex items-center space-x-3 p-3 rounded-xl hover:bg-slate-700/50 text-gray-300 hover:text-white transition"
+        >
+          <i class="fa-solid fa-chair w-6 text-center text-amber-400"></i>
+          <span class="nav-text">Mesas</span>
+        </a>
+        <a
+          href="/api/rh/"
+          class="flex items-center space-x-3 p-3 rounded-xl hover:bg-slate-700/50 text-gray-300 hover:text-white transition"
+        >
+          <i class="fa-solid fa-users-gear w-6 text-center text-purple-400"></i>
+          <span class="nav-text">Equipe / RH</span>
+        </a>
+        <a
+          href="/relogioponto/"
+          class="flex items-center space-x-3 p-3 rounded-xl hover:bg-slate-700/50 text-gray-300 hover:text-white transition"
+        >
+          <i
+            class="fa-solid fa-clock-rotate-left w-6 text-center text-yellow-400"
+          ></i>
+          <span class="nav-text">Relógio de Ponto</span>
+        </a>
+        <a
+          href="/api/financeiro/dashboard/"
+          class="flex items-center space-x-3 p-3 rounded-xl hover:bg-slate-700/50 text-gray-300 hover:text-white transition"
+        >
+          <i class="fa-solid fa-wallet w-6 text-center text-rose-400"></i>
+          <span class="nav-text">Financeiro & Caixa</span>
+        </a>
+      </nav>
+
+      <!-- Rodapé do Sidebar -->
+      <div
+        class="p-4 border-t border-gray-800 text-xs text-gray-500 text-center nav-text"
+      >
+        v1.0.0 - Production Ready
+      </div>
+    </aside>
+
+    <!-- CONTEÚDO PRINCIPAL -->
+    <main class="flex-1 flex flex-col overflow-y-auto">
+      <!-- Header Superior -->
+      <header
+        class="bg-cardBg border-b border-gray-800 h-16 flex items-center justify-between px-8 shadow-md"
+      >
+        <h1 class="text-xl font-bold tracking-wide text-white">
+          Painel Operacional
+        </h1>
+        <div class="flex items-center space-x-4">
+          <span
+            class="flex items-center text-sm bg-emerald-500/10 text-emerald-400 px-3 py-1 rounded-full border border-emerald-500/20"
+          >
+            <span
+              class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse mr-2"
+            ></span>
+            Sistema Online
+          </span>
+          <div
+            class="w-9 h-9 bg-indigo-600 rounded-full flex items-center justify-center font-bold text-white shadow"
+          >
+            W
+          </div>
+        </div>
+      </header>
+
+      <!-- Container Dinâmico / Métricas -->
+      <div class="p-8 space-y-8">
+        <!-- Cards de Métricas Vibrantes -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+          <!-- Card 1: Faturamento -->
+          <div
+            class="bg-cardBg border border-gray-800 p-6 rounded-2xl shadow-xl relative overflow-hidden group hover:border-emerald-500/50 transition"
+          >
+            <div
+              class="absolute -right-4 -bottom-4 text-emerald-500/10 text-8xl group-hover:scale-110 transition"
+            >
+              <i class="fa-solid fa-dollar-sign"></i>
+            </div>
+            <p class="text-gray-400 text-sm font-medium">Faturamento Total</p>
+            <h3 class="text-3xl font-extrabold text-emerald-400 mt-2">
+              R$ 396,00
+            </h3>
+            <span class="text-xs text-emerald-500 mt-2 inline-block"
+              ><i class="fa-solid fa-arrow-trend-up"></i> Atualizado agora</span
+            >
+          </div>
+
+          <!-- Card 2: Pedidos -->
+          <div
+            class="bg-cardBg border border-gray-800 p-6 rounded-2xl shadow-xl relative overflow-hidden group hover:border-blue-500/50 transition"
+          >
+            <div
+              class="absolute -right-4 -bottom-4 text-blue-500/10 text-8xl group-hover:scale-110 transition"
+            >
+              <i class="fa-solid fa-receipt"></i>
+            </div>
+            <p class="text-gray-400 text-sm font-medium">Pedidos Registrados</p>
+            <h3 class="text-3xl font-extrabold text-blue-400 mt-2">11</h3>
+            <span class="text-xs text-blue-400 mt-2 inline-block"
+              ><i class="fa-solid fa-check"></i> Sincronizados</span
+            >
+          </div>
+
+          <!-- Card 3: Produtos -->
+          <div
+            class="bg-cardBg border border-gray-800 p-6 rounded-2xl shadow-xl relative overflow-hidden group hover:border-purple-500/50 transition"
+          >
+            <div
+              class="absolute -right-4 -bottom-4 text-purple-500/10 text-8xl group-hover:scale-110 transition"
+            >
+              <i class="fa-solid fa-boxes-stacked"></i>
+            </div>
+            <p class="text-gray-400 text-sm font-medium">Itens no Catálogo</p>
+            <h3 class="text-3xl font-extrabold text-purple-400 mt-2">Ativo</h3>
+            <span class="text-xs text-purple-400 mt-2 inline-block"
+              ><i class="fa-solid fa-database"></i> PostgreSQL Conectado</span
+            >
+          </div>
+
+          <!-- Card 4: Alertas / Status -->
+          <div
+            class="bg-cardBg border border-gray-800 p-6 rounded-2xl shadow-xl relative overflow-hidden group hover:border-amber-500/50 transition"
+          >
+            <div
+              class="absolute -right-4 -bottom-4 text-amber-500/10 text-8xl group-hover:scale-110 transition"
+            >
+              <i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+            <p class="text-gray-400 text-sm font-medium">Módulos em Expansão</p>
+            <h3 class="text-3xl font-extrabold text-amber-400 mt-2">
+              Estoque+
+            </h3>
+            <span class="text-xs text-amber-400 mt-2 inline-block"
+              ><i class="fa-solid fa-code"></i> Próxima etapa</span
+            >
+          </div>
+        </div>
+
+        <!-- Seção de Ações e Expansão Futura -->
+        <div class="bg-cardBg border border-gray-800 rounded-2xl p-6 shadow-xl">
+          <h2 class="text-lg font-bold text-white mb-4 flex items-center">
+            <i class="fa-solid fa-rocket text-indigo-400 mr-2"></i> Próximos
+            Módulos de Expansão do ERP
+          </h2>
+          <p class="text-gray-400 text-sm mb-6">
+            Com a torre de controle ativa, estamos prontos para plugar os novos
+            subsistemas de <strong>Controle de Estoque Avançado</strong>,
+            <strong>Fornecedores</strong> e <strong>Ordens de Compra</strong>.
+          </p>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div
+              class="p-4 rounded-xl bg-slate-800/60 border border-slate-700/50"
+            >
+              <div class="text-indigo-400 font-bold mb-1">
+                <i class="fa-solid fa-warehouse mr-2"></i> 1. Estoque & Lotes
+              </div>
+              <p class="text-xs text-gray-400">
+                Gerenciamento dinâmico de entradas físicas vinculadas às vendas.
+              </p>
+            </div>
+            <div
+              class="p-4 rounded-xl bg-slate-800/60 border border-slate-700/50"
+            >
+              <div class="text-emerald-400 font-bold mb-1">
+                <i class="fa-solid fa-truck-field mr-2"></i> 2. Fornecedores
+              </div>
+              <p class="text-xs text-gray-400">
+                Cadastro centralizado de parceiros e histórico de aquisições.
+              </p>
+            </div>
+            <div
+              class="p-4 rounded-xl bg-slate-800/60 border border-slate-700/50"
+            >
+              <div class="text-blue-400 font-bold mb-1">
+                <i class="fa-solid fa-cart-shopping mr-2"></i> 3. Gestão de
+                Compras
+              </div>
+              <p class="text-xs text-gray-400">
+                Automatização de contas a pagar e reposição de mercadorias.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Script para Recolher/Expandir o Menu Lateral -->
+    <script>
+      function toggleSidebar() {
+        const sidebar = document.getElementById("sidebar");
+        const texts = document.querySelectorAll(".nav-text");
+        const logoContainer = document.getElementById("logo-container");
+
+        if (sidebar.classList.contains("w-64")) {
+          sidebar.classList.remove("w-64");
+          sidebar.classList.add("w-20");
+          texts.forEach((el) => el.classList.add("hidden"));
+          logoContainer.classList.add("justify-center");
+        } else {
+          sidebar.classList.remove("w-20");
+          sidebar.classList.add("w-64");
+          texts.forEach((el) => el.classList.remove("hidden"));
+          logoContainer.classList.remove("justify-center");
+        }
+      }
+    </script>
+  </body>
+</html>

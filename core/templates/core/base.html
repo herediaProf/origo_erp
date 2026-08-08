@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="pt-br" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GastroTech ERP</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome para ícones -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+  </head>
+  <body class="bg-slate-950 text-gray-100 flex h-screen overflow-hidden">
+    <!-- Menu Lateral (Sidebar) -->
+    <aside class="w-64 bg-slate-900 border-r border-slate-800 flex flex-col">
+      <div
+        class="p-4 text-xl font-bold text-indigo-400 border-b border-slate-800"
+      >
+        GastroTech ERP
+      </div>
+      <nav class="flex-1 p-4 space-y-2 overflow-y-auto">
+        <a
+          href="/dashboard/"
+          class="flex items-center space-x-3 p-3 rounded-xl hover:bg-slate-800 text-gray-300 transition"
+        >
+          <i class="fa-solid fa-chart-pie w-6 text-center"></i>
+          <span>Dashboard</span>
+        </a>
+        <a
+          href="/api/rh/"
+          class="flex items-center space-x-3 p-3 rounded-xl bg-indigo-600/20 text-indigo-400 border border-indigo-500/30 transition"
+        >
+          <i class="fa-solid fa-users-gear w-6 text-center text-purple-400"></i>
+          <span>Equipe / RH</span>
+        </a>
+      </nav>
+    </aside>
+
+    <!-- Conteúdo Principal -->
+    <main class="flex-1 flex flex-col overflow-y-auto">
+      <header
+        class="h-16 bg-slate-900 border-b border-slate-800 flex items-center justify-between px-6"
+      >
+        <span class="text-sm text-gray-400">Painel Administrativo</span>
+      </header>
+
+      <div class="flex-1">{% block content %} {% endblock %}</div>
+    </main>
+  </body>
+</html>

@@ -6,6 +6,8 @@ class VendaInline(admin.TabularInline):
     model = Venda
     extra = 0
     readonly_fields = ("subtotal", "valor_taxa_servico", "valor_total", "data_venda")
+    can_delete = False
+    show_change_link = True
 
 
 @admin.register(Caixa)
@@ -20,6 +22,9 @@ class CaixaAdmin(admin.ModelAdmin):
         "data_fechamento",
     )
     list_filter = ("status", "data_abertura")
+    search_fields = ("operador__username", "operador__first_name", "id")
+    date_hierarchy = "data_abertura"
+    readonly_fields = ("data_abertura",)
     inlines = [VendaInline]
 
 
@@ -36,6 +41,9 @@ class VendaAdmin(admin.ModelAdmin):
         "data_venda",
     )
     list_filter = ("forma_pagamento", "paga_taxa_servico", "data_venda")
+    search_fields = ("id", "pedido__id", "caixa__id")
+    date_hierarchy = "data_venda"
+    readonly_fields = ("data_venda",)
 
 
 @admin.register(RateioCaixinha)
@@ -47,6 +55,9 @@ class RateioCaixinhaAdmin(admin.ModelAdmin):
         "valor_por_funcionario",
         "data_rateio",
     )
+    list_filter = ("data_rateio",)
+    search_fields = ("caixa__id",)
+    date_hierarchy = "data_rateio"
     readonly_fields = (
         "caixa",
         "valor_total_caixinha",

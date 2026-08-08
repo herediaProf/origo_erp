@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="pt-br" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Painel de Pedidos - OrigoERP</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+  </head>
+  <body class="bg-slate-950 text-gray-100 p-6 min-h-screen">
+    <div class="max-w-6xl mx-auto">
+      <!-- Cabeçalho Padrão -->
+      <div class="flex justify-between items-center mb-6">
+        <h1 class="text-2xl font-bold text-white flex items-center">
+          <i class="fa-solid fa-receipt text-blue-400 mr-2"></i> Painel de
+          Vendas e Pedidos
+        </h1>
+        <a
+          href="/dashboard/"
+          class="text-indigo-400 hover:underline text-sm flex items-center"
+        >
+          <i class="fa-solid fa-arrow-left mr-1"></i> Voltar ao Dashboard
+        </a>
+      </div>
+
+      <!-- Cards de Métricas com Padrão Dark -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div
+          class="bg-slate-900 p-6 rounded-xl border border-slate-800 shadow-lg"
+        >
+          <div class="flex items-center justify-between">
+            <h3 class="text-gray-400 text-sm font-medium">Total de Pedidos</h3>
+            <i class="fa-solid fa-receipt text-blue-400 text-xl"></i>
+          </div>
+          <p class="text-2xl font-bold text-blue-400 mt-2">
+            {{ total_pedidos|default:"0" }}
+          </p>
+        </div>
+
+        <div
+          class="bg-slate-900 p-6 rounded-xl border border-slate-800 shadow-lg"
+        >
+          <div class="flex items-center justify-between">
+            <h3 class="text-gray-400 text-sm font-medium">Total de Produtos</h3>
+            <i class="fa-solid fa-box text-emerald-400 text-xl"></i>
+          </div>
+          <p class="text-2xl font-bold text-emerald-400 mt-2">
+            {{ total_produtos|default:"0" }}
+          </p>
+        </div>
+
+        <div
+          class="bg-slate-900 p-6 rounded-xl border border-slate-800 shadow-lg"
+        >
+          <div class="flex items-center justify-between">
+            <h3 class="text-gray-400 text-sm font-medium">Total de Mesas</h3>
+            <i class="fa-solid fa-chair text-amber-400 text-xl"></i>
+          </div>
+          <p class="text-2xl font-bold text-amber-400 mt-2">
+            {{ total_mesas|default:"0" }}
+          </p>
+        </div>
+      </div>
+
+      <!-- Atalho para API -->
+      <div
+        class="bg-slate-900 rounded-xl p-6 shadow-lg border border-slate-800 flex justify-between items-center"
+      >
+        <div>
+          <h3 class="text-lg font-semibold text-white">
+            Endpoints do Django REST Framework
+          </h3>
+          <p class="text-gray-400 text-sm mt-1">
+            Acesse os dados em formato JSON para integração.
+          </p>
+        </div>
+        <div>
+          <a
+            href="/api/pedidos/"
+            target="_blank"
+            class="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-lg text-sm font-medium transition"
+          >
+            Ver APIs REST
+          </a>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

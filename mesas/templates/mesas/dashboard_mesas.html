@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="pt-br" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Gerenciamento de Mesas - OrigoERP</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+  </head>
+  <body class="bg-slate-950 text-gray-100 p-6">
+    <div class="max-w-6xl mx-auto">
+      <div class="flex justify-between items-center mb-6">
+        <h1 class="text-2xl font-bold text-white">
+          <i class="fa-solid fa-chair text-amber-400 mr-2"></i> Mesas
+        </h1>
+        <a href="/dashboard/" class="text-indigo-400 hover:underline text-sm"
+          ><i class="fa-solid fa-arrow-left"></i> Voltar ao Dashboard</a
+        >
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4" id="gridMesas"></div>
+    </div>
+
+    <script>
+      async function carregarMesas() {
+        try {
+          let res = await fetch("/api/mesas/api/mesas/");
+          let dados = await res.json();
+          let grid = document.getElementById("gridMesas");
+          grid.innerHTML = "";
+          dados.forEach((m) => {
+            let livre = m.status === "livre";
+            grid.innerHTML += `
+                    <div class="bg-slate-900 border ${livre ? "border-emerald-500/30" : "border-rose-500/30"} p-4 rounded-xl shadow-lg text-center">
+                        <i class="fa-solid fa-chair text-3xl ${livre ? "text-emerald-400" : "text-rose-400"} mb-2"></i>
+                        <h3 class="text-lg font-bold text-white">Mesa ${m.numero}</h3>
+                        <span class="inline-block mt-2 px-3 py-1 rounded text-xs ${livre ? "bg-emerald-500/20 text-emerald-400" : "bg-rose-500/20 text-rose-400"}">${m.status.toUpperCase()}</span>
+                    </div>
+                `;
+          });
+        } catch (e) {
+          console.error(e);
+        }
+      }
+      carregarMesas();
+    </script>
+  </body>
+</html>
