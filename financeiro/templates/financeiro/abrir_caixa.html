@@ -1,0 +1,35 @@
+{% extends 'core/base.html' %} {% block content %}
+<div class="container mt-4">
+  <h2>Abertura de Caixa</h2>
+
+  {% if caixa_aberto %}
+  <div class="alert alert-warning">
+    O caixa já está aberto pelo usuário
+    <strong>{{ caixa_aberto.usuario_abertura.username }}</strong>
+    com saldo inicial de R$ {{ caixa_aberto.saldo_inicial }}.
+  </div>
+  <a href="/api/financeiro/vendas-view/novo/" class="btn btn-primary"
+    >Ir para o PDV (Vendas)</a
+  >
+  {% else %}
+  <form method="POST">
+    {% csrf_token %}
+    <div class="mb-3">
+      <label for="saldo_inicial" class="form-label"
+        >Valor Inicial (Troco no Caixa):</label
+      >
+      <input
+        type="number"
+        step="0.01"
+        class="form-control"
+        id="saldo_inicial"
+        name="saldo_inicial"
+        required
+        value="0.00"
+      />
+    </div>
+    <button type="submit" class="btn btn-success">Abrir Caixa</button>
+  </form>
+  {% endif %}
+</div>
+{% endblock %}

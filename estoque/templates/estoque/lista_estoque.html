@@ -31,5 +31,24 @@
         </p>
       </div>
     </div>
+    <form
+      method="POST"
+      class="space-y-4 bg-slate-900 p-6 rounded-xl border border-slate-800 mb-6"
+    >
+      {% csrf_token %}
+      <h2 class="text-xl font-bold text-white mb-4">
+        <i class="fa-solid fa-plus text-teal-400 mr-2"></i> Cadastrar Novo Item
+        no Estoque
+      </h2>
+
+      {{ form.as_p }}
+
+      <button
+        type="submit"
+        class="w-full bg-teal-600 hover:bg-teal-500 text-white font-semibold py-3 rounded-lg transition"
+      >
+        Salvar Produto
+      </button>
+    </form>
   </body>
 </html>

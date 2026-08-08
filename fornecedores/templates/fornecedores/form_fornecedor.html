@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="pt-br" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <title>{{ titulo }} - OrigoERP</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+  </head>
+  <body class="bg-slate-950 text-gray-100 min-h-screen p-4 flex flex-col">
+    <div class="max-w-xl mx-auto w-full flex-1 flex flex-col justify-center">
+      <div
+        class="bg-slate-900 border border-slate-800 p-6 rounded-xl shadow-lg"
+      >
+        <div
+          class="flex justify-between items-center border-b border-slate-800 pb-4 mb-6"
+        >
+          <h1 class="text-xl font-bold text-white">
+            <i class="fa-solid fa-truck text-emerald-400 mr-2"></i>{{ titulo }}
+          </h1>
+          <a
+            href="{% url 'fornecedores_web:fornecedores_lista' %}"
+            class="text-gray-400 hover:text-white text-sm"
+          >
+            <i class="fa-solid fa-xmark"></i> Fechar
+          </a>
+        </div>
+
+        <form method="POST" class="space-y-4">
+          {% csrf_token %}
+
+          <div>
+            <label class="block text-xs font-medium text-gray-400 mb-1"
+              >Razão Social / Nome</label
+            >
+            <input
+              type="text"
+              name="nome"
+              value="{{ fornecedor.nome|default:'' }}"
+              required
+              class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-emerald-500"
+            />
+          </div>
+
+          <div>
+            <label class="block text-xs font-medium text-gray-400 mb-1"
+              >CNPJ/CPF</label
+            >
+            <input
+              type="text"
+              name="cnpj_cpf"
+              value="{{ fornecedor.cnpj_cpf|default:'' }}"
+              required
+              class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-emerald-500"
+            />
+          </div>
+
+          <div>
+            <label class="block text-xs font-medium text-gray-400 mb-1"
+              >Telefone</label
+            >
+            <input
+              type="text"
+              name="telefone"
+              value="{{ fornecedor.telefone|default:'' }}"
+              class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-emerald-500"
+            />
+          </div>
+
+          <div>
+            <label class="block text-xs font-medium text-gray-400 mb-1"
+              >E-mail</label
+            >
+            <input
+              type="email"
+              name="email"
+              value="{{ fornecedor.email|default:'' }}"
+              class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-emerald-500"
+            />
+          </div>
+
+          <!-- Campo Endereço adicionado para evitar falha no banco de dados caso seja obrigatório ou preenchido na view -->
+          <div>
+            <label class="block text-xs font-medium text-gray-400 mb-1"
+              >Endereço</label
+            >
+            <textarea
+              name="endereco"
+              rows="2"
+              class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-emerald-500 resize-none"
+            >
+{{ fornecedor.endereco|default:'' }}</textarea
+            >
+          </div>
+
+          <div class="pt-4 flex space-x-3">
+            <button
+              type="submit"
+              class="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold py-2.5 rounded-lg transition shadow-lg shadow-emerald-900/30"
+            >
+              Salvar Fornecedor
+            </button>
+            <a
+              href="{% url 'fornecedores_web:fornecedores_lista' %}"
+              class="bg-slate-800 hover:bg-slate-700 text-gray-300 px-5 py-2.5 rounded-lg text-sm transition border border-slate-700 text-center flex items-center justify-center"
+            >
+              Cancelar
+            </a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </body>
+</html>

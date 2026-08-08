@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Relógio de Ponto</title>
+    <style>
+      body {
+        background-color: #0d1117;
+        color: #c9d1d9;
+        font-family: Arial, sans-serif;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+      }
+      .card {
+        background: #161b22;
+        padding: 30px;
+        border-radius: 12px;
+        border: 1px solid #30363d;
+        text-align: center;
+        width: 400px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+      }
+      #relogio {
+        font-size: 42px;
+        font-weight: bold;
+        color: #58a6ff;
+        margin: 20px 0;
+      }
+      .btn {
+        padding: 12px 20px;
+        font-size: 16px;
+        font-weight: bold;
+        border-radius: 6px;
+        border: none;
+        cursor: pointer;
+        width: 100%;
+        margin-top: 10px;
+      }
+      .btn-entrada {
+        background-color: #238636;
+        color: #fff;
+      }
+      .btn-saida {
+        background-color: #da3633;
+        color: #fff;
+      }
+      .btn-voltar {
+        background-color: #30363d;
+        color: #c9d1d9;
+        text-decoration: none;
+        display: inline-block;
+        margin-top: 15px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <h2>Relógio de Ponto</h2>
+      <div id="relogio">00:00:00</div>
+      <p id="data" style="color: #8b949e"></p>
+
+      <button
+        class="btn btn-entrada"
+        onclick="alert('Ponto de Entrada registrado com sucesso!')"
+      >
+        Registrar Entrada
+      </button>
+      <button
+        class="btn btn-saida"
+        onclick="alert('Ponto de Saída registrado com sucesso!')"
+      >
+        Registrar Saída
+      </button>
+
+      <br />
+      <a href="/dashboard/" class="btn-voltar">Voltar ao Dashboard</a>
+    </div>
+
+    <script>
+      function atualizarRelogio() {
+        const agora = new Date();
+        document.getElementById("relogio").innerText =
+          agora.toLocaleTimeString("pt-BR");
+        document.getElementById("data").innerText = agora.toLocaleDateString(
+          "pt-BR",
+          { weekday: "long", year: "numeric", month: "long", day: "numeric" },
+        );
+      }
+      setInterval(atualizarRelogio, 1000);
+      atualizarRelogio();
+    </script>
+  </body>
+</html>

@@ -21,19 +21,30 @@ urlpatterns = [
     path("financeiro-caixa/", financeiro_dashboard_view, name="financeiro_dashboard"),
     path("mesas/", mesas_dashboard_view, name="mesas_dashboard"),
     path("vendas-pedidos/", pedidos_dashboard_view, name="pedidos_dashboard"),
-    path("estoque/itens/", estoque_view, name="estoque_view"),
-    path("fornecedores/", fornecedores_view, name="fornecedores_view"),
-    path("clientes/", clientes_view, name="clientes_view"),
+    # Estoque (Telas Visuais HTML)
+    path("estoque/", include(("estoque.urls", "estoque"), namespace="estoque_web")),
+    # Fornecedores (Telas Visuais HTML - Atualizado para incluir o app com namespace)
+    path(
+        "fornecedores/",
+        include(("fornecedores.urls", "fornecedores"), namespace="fornecedores_web"),
+    ),
+    # Rotas Visuais de Clientes (Com namespace exclusivo web)
+    path("clientes/", include(("clientes.urls", "clientes"), namespace="clientes_web")),
     path("relogioponto/", relogioponto_view, name="relogioponto_view"),
-    # APIs dos Apps (Sem duplicações)
+    # APIs dos Apps
     path("api/produtos/", include("produtos.urls")),
     path("api/pedidos/", include("pedidos.urls")),
     path("api/mesas/", include("mesas.urls")),
     path("api/financeiro/", include("financeiro.urls")),
     path("api/rh/", include("rh.urls")),
     path("api/estoque/", include("estoque.urls")),
+    # API de Fornecedores (Mantida limpa na API)
     path("api/fornecedores/", include("fornecedores.urls")),
-    path("api/clientes/", include("clientes.urls")),
+    # API de Clientes (Com namespace exclusivo api)
+    path(
+        "api/clientes/",
+        include(("clientes.urls", "clientes"), namespace="clientes_api"),
+    ),
     path("api/relogioponto/", include("relogioponto.urls")),
     path("api/compras/", include("compras.urls")),
     path("api/funcionarios/", include("funcionarios.urls")),

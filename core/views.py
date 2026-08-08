@@ -1,4 +1,6 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404, redirect
+from clientes.models import Cliente
+from funcionarios.models import Funcionario
 
 
 def dashboard_view(request):
@@ -13,7 +15,7 @@ def financeiro_caixa_view(request):
     return render(request, "core/financeiro_caixa.html")
 
 
-# --- Novas Views para os módulos criados ---
+# --- Módulos Criados ---
 
 
 def estoque_view(request):
@@ -25,8 +27,19 @@ def fornecedores_view(request):
 
 
 def clientes_view(request):
-    return render(request, "clientes/index.html")
+    """Renderiza a listagem visual de clientes buscados do banco de dados."""
+    clientes = Cliente.objects.all()
+    return render(request, "clientes/lista_clientes.html", {"clientes": clientes})
+
+
+def funcionarios_view(request):
+    """Renderiza a listagem visual de funcionários buscados do banco de dados."""
+    funcionarios = Funcionario.objects.all()
+    return render(
+        request, "funcionarios/lista_funcionarios.html", {"funcionarios": funcionarios}
+    )
 
 
 def relogioponto_view(request):
-    return render(request, "relogioponto/index.html")
+    """Renderiza a interface visual do relógio de ponto."""
+    return render(request, "relogioponto/ponto.html")

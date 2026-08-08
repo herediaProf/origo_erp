@@ -66,30 +66,30 @@
         </div>
       </div>
 
-      <!-- Atalhos / Seção de Gerenciamento da API -->
+      <!-- Atalhos / Seção de Gerenciamento Visual -->
       <div
         class="bg-slate-900 rounded-xl p-6 shadow-lg border border-slate-800 flex justify-between items-center"
       >
         <div>
           <h3 class="text-lg font-semibold text-white">
-            Gerenciar Registros via API
+            Gerenciamento Operacional
           </h3>
           <p class="text-gray-400 text-sm mt-1">
-            Acesse os endpoints do Django REST Framework para caixas, vendas e
-            rateios.
+            Gerencie a abertura e fechamento de caixas, além do controle
+            completo de vendas.
           </p>
         </div>
         <div class="space-x-3">
+          <!-- Aponta para a listagem visual de caixas -->
           <a
-            href="/api/financeiro/caixas/"
-            target="_blank"
+            href="/api/financeiro/caixas-view/"
             class="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-lg text-sm font-medium transition"
           >
             Ver Caixas
           </a>
+          <!-- Aponta para a listagem visual de vendas -->
           <a
-            href="/api/financeiro/vendas/"
-            target="_blank"
+            href="/api/financeiro/vendas-view/"
             class="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-lg text-sm font-medium transition"
           >
             Ver Vendas
