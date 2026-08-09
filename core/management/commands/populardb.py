@@ -1,7 +1,7 @@
 from django.core.management.base import BaseCommand
 from decimal import Decimal
 from mesas.models import Mesa
-from rh.models import Funcionario
+from rh.models import Funcionario  # Mantido caso queira usar depois
 from fornecedores.models import Fornecedor
 from produtos.models import Categoria, Produto
 from clientes.models import Cliente
@@ -17,8 +17,12 @@ class Command(BaseCommand):
         for i in range(1, 21):
             Mesa.objects.get_or_create(numero=i, defaults={"status": "LIVRE"})
 
-        # 2. Criar Categoria e Produto inicial (com a descrição preenchida)
-        cat, _ = Categoria.objects.get_or_create(nome="Bebidas")
+        # 2. Criar Categoria (com defaults para evitar erro de campo obrigatório)
+        cat, _ = Categoria.objects.get_or_create(
+            nome="Bebidas", defaults={"descricao": "Bebidas em geral"}
+        )
+
+        # Criar Produto inicial
         Produto.objects.get_or_create(
             nome="Cerveja 600ml",
             defaults={

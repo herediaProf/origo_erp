@@ -1,20 +1,20 @@
-from django.test import TestCase
 from decimal import Decimal
 from django.contrib.auth import get_user_model
-from mesas.models import Mesa
-from pedidos.models import Pedido
+from django.test import TestCase
 from financeiro.models import Caixa, Venda
+from pedidos.models import Mesa, Pedido  # Mesa importada do app pedidos
 
 User = get_user_model()
 
 
 class FinanceiroTestCase(TestCase):
     def setUp(self):
-        # Criação de dados de apoio para os testes
         self.operador = User.objects.create_user(
             username="operador_caixa", password="123"
         )
+        # Cria a mesa diretamente no app pedidos
         self.mesa = Mesa.objects.create(numero=1, status="OCUPADA")
+
         self.pedido = Pedido.objects.create(
             mesa=self.mesa, status="ABERTO", valor_total=Decimal("50.00")
         )
