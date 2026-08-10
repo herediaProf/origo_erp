@@ -43,7 +43,8 @@ urlpatterns = [
     path("api/mesas/", include("mesas.urls")),
     path("api/financeiro/", include("financeiro.urls")),
     path("api/rh/", include("rh.urls")),
-    path("api/estoque/", include("estoque.urls")),
+    # CORREÇÃO AQUI: Adicionado o namespace 'estoque' na API também
+    path("api/estoque/", include(("estoque.urls", "estoque"), namespace="estoque")),
     path("api/fornecedores/", include("fornecedores.urls")),
     path(
         "api/clientes/",

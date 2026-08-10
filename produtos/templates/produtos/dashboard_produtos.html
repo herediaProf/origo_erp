@@ -43,7 +43,7 @@
     <script>
       async function carregarProdutos() {
         try {
-          let res = await fetch("/api/produtos/");
+          let res = await fetch("/api/produtos/api/");
           let dados = await res.json();
           let corpo = document.getElementById("corpoTabelaProdutos");
           corpo.innerHTML = "";

@@ -1,4 +1,5 @@
-from django.shortcuts import render, get_object_or_404, redirect
+from django.db import IntegrityError
+from django.shortcuts import get_object_or_404, redirect, render
 from .models import Cliente
 
 
@@ -9,7 +10,7 @@ def clientes_view(request):
 
 
 def salvar_cliente(request, pk=None):
-    """Cria ou edita um cliente."""
+    """Cria ou edita um cliente com tratamento de duplicidade de CPF/CNPJ."""
     cliente = get_object_or_404(Cliente, pk=pk) if pk else None
 
     if request.method == "POST":
@@ -18,17 +19,26 @@ def salvar_cliente(request, pk=None):
         telefone = request.POST.get("telefone")
         email = request.POST.get("email")
 
-        if cliente:
-            cliente.nome = nome
-            cliente.cpf_cnpj = cpf_cnpj
-            cliente.telefone = telefone
-            cliente.email = email
-            cliente.save()
-        else:
-            Cliente.objects.create(
-                nome=nome, cpf_cnpj=cpf_cnpj, telefone=telefone, email=email
-            )
-        return redirect("/clientes/")
+        try:
+            if cliente:
+                cliente.nome = nome
+                cliente.cpf_cnpj = cpf_cnpj
+                cliente.telefone = telefone
+                cliente.email = email
+                cliente.save()
+            else:
+                Cliente.objects.create(
+                    nome=nome, cpf_cnpj=cpf_cnpj, telefone=telefone, email=email
+                )
+            return redirect("/clientes/")
+
+        except IntegrityError:
+            # Em caso de CPF/CNPJ duplicado, recarrega o formulário com a mensagem de erro
+            context = {
+                "cliente": cliente,
+                "erro": "Já existe um cliente cadastrado com este CPF/CNPJ.",
+            }
+            return render(request, "clientes/form_cliente.html", context)
 
     return render(request, "clientes/form_cliente.html", {"cliente": cliente})
 

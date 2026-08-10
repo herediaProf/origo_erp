@@ -39,41 +39,82 @@
       </header>
 
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 flex-1">
-        <!-- Coluna Esquerda: Itens -->
+        <!-- Coluna Esquerda: Pedidos e Produtos -->
         <div class="lg:col-span-2 flex flex-col space-y-4">
+          <!-- Opção 1: Carregar Pedido do Garçom -->
           <div
             class="bg-slate-900 border border-slate-800 p-4 rounded-xl shadow-lg"
           >
             <label class="block text-sm font-medium text-gray-300 mb-2">
-              <i class="fa-solid fa-barcode text-emerald-400 mr-1"></i>
-              Selecione o Pedido (ID):
+              <i class="fa-solid fa-utensils text-emerald-400 mr-1"></i>
+              Carregar Pedido da Mesa (Comanda):
             </label>
-            <form id="form-venda" method="POST" class="flex space-x-2">
-              {% csrf_token %}
-              <!-- Importante: Nome do campo igual ao que o Django espera no POST -->
+            <div class="flex space-x-2">
               <select
-                name="pedido_id"
-                id="pedido_id"
-                class="flex-1 bg-slate-800 border border-slate-700 rounded-lg px-4 py-2.5 text-white focus:border-emerald-500 outline-none"
+                id="select_pedido"
+                class="flex-1 bg-slate-800 border border-slate-700 rounded-lg px-4 py-2.5 text-white focus:border-emerald-500 outline-none text-sm"
               >
-                <option value="">-- Selecione um Pedido --</option>
+                <option value="">-- Selecione um Pedido em Aberto --</option>
                 {% for pedido in pedidos %}
                 <option value="{{ pedido.id }}">
-                  Pedido #{{ pedido.id }} - {{
-                  pedido.cliente.nome|default:"Cliente não informado" }}
+                  Pedido #{{ pedido.id }} - Mesa {{
+                  pedido.mesa.numero|default:"Balcão" }} (Cliente: {{
+                  pedido.cliente.nome|default:"Não informado" }})
                 </option>
                 {% endfor %}
               </select>
               <button
                 type="button"
-                class="bg-emerald-600 hover:bg-emerald-500 text-white px-5 py-2.5 rounded-lg font-medium transition"
+                onclick="carregarItensPedido()"
+                class="bg-blue-600 hover:bg-blue-500 text-white px-5 py-2.5 rounded-lg font-medium transition text-sm whitespace-nowrap"
+              >
+                Importar Pedido
+              </button>
+            </div>
+          </div>
+
+          <!-- Opção 2: Adicionar Produto Avulso / Rápido -->
+          <div
+            class="bg-slate-900 border border-slate-800 p-4 rounded-xl shadow-lg"
+          >
+            <label class="block text-sm font-medium text-gray-300 mb-2">
+              <i class="fa-solid fa-box text-emerald-400 mr-1"></i>
+              Adicionar Produto Avulso / Balcão:
+            </label>
+            <div class="flex space-x-2">
+              <select
+                id="select_produto"
+                class="flex-1 bg-slate-800 border border-slate-700 rounded-lg px-4 py-2.5 text-white focus:border-emerald-500 outline-none text-sm"
+              >
+                <option value="">-- Selecione o Produto --</option>
+                {% for prod in produtos %}
+                <option value="{{ prod.id }}" data-preco="{{ prod.preco }}">
+                  #{{ prod.id }} - {{ prod.nome }} (Estoque: {{
+                  prod.estoque_atual|default:0 }}) - R$ {{ prod.preco }}
+                </option>
+                {% endfor %}
+              </select>
+
+              <input
+                type="number"
+                id="qtd_produto"
+                value="1"
+                min="1"
+                class="w-20 bg-slate-800 border border-slate-700 rounded-lg px-3 py-2.5 text-center text-white focus:border-emerald-500 outline-none text-sm"
+                placeholder="Qtd"
+              />
+
+              <button
+                type="button"
+                onclick="adicionarProdutoAvulso()"
+                class="bg-emerald-600 hover:bg-emerald-500 text-white px-5 py-2.5 rounded-lg font-medium transition text-sm whitespace-nowrap"
               >
                 Adicionar
               </button>
-            </form>
+            </div>
           </div>
 
-          <!-- Tabela de Itens -->
+          <!-- Tabela de Itens do Carrinho -->
           <div
             class="bg-slate-900 border border-slate-800 rounded-xl shadow-lg flex-1 overflow-hidden flex flex-col"
           >
@@ -84,21 +125,26 @@
                 <tr>
                   <th class="p-3">Produto</th>
                   <th class="p-3 text-center">Qtd</th>
-                  <th class="p-3 text-right">Preço</th>
+                  <th class="p-3 text-right">Preço Unit.</th>
                   <th class="p-3 text-right">Total</th>
+                  <th class="p-3 text-center">Ações</th>
                 </tr>
               </thead>
               <tbody
                 id="tabela-carrinho"
                 class="divide-y divide-slate-800 text-sm"
               >
-                <!-- Itens serão carregados aqui -->
+                <tr>
+                  <td colspan="5" class="p-4 text-center text-gray-500">
+                    Nenhum item adicionado ao caixa.
+                  </td>
+                </tr>
               </tbody>
             </table>
           </div>
         </div>
 
-        <!-- Coluna Direita: Resumo -->
+        <!-- Coluna Direita: Resumo, Pagamento e Troco -->
         <div
           class="bg-slate-900 border border-slate-800 p-5 rounded-xl shadow-lg flex flex-col justify-between"
         >
@@ -109,30 +155,57 @@
               Fechamento
             </h2>
 
-            <div class="space-y-4">
-              <!-- Campos extras necessários pelo seu model -->
+            <form id="form-venda" method="POST" class="space-y-4">
+              {% csrf_token %}
               <div>
-                <label class="text-xs text-gray-400">Forma de Pagamento</label>
+                <label class="text-xs text-gray-400 block mb-1"
+                  >Forma de Pagamento</label
+                >
                 <select
                   name="forma_pagamento"
-                  form="form-venda"
-                  class="w-full bg-slate-800 border border-slate-700 rounded p-2 text-sm"
+                  id="forma_pagamento"
+                  onchange="verificarDinheiro()"
+                  class="w-full bg-slate-800 border border-slate-700 rounded p-2.5 text-sm text-white outline-none"
                 >
                   <option value="dinheiro">Dinheiro</option>
                   <option value="cartao">Cartão</option>
                   <option value="pix">PIX</option>
                 </select>
               </div>
-            </div>
+
+              <!-- Bloco de Cálculo de Troco -->
+              <div
+                id="bloco-dinheiro"
+                class="space-y-2 bg-slate-950 p-3 rounded-lg border border-slate-800"
+              >
+                <label class="text-xs text-gray-400 block"
+                  >Valor Recebido (Dinheiro)</label
+                >
+                <input
+                  type="number"
+                  id="valor_recebido"
+                  oninput="calcularTroco()"
+                  step="0.01"
+                  placeholder="R$ 0,00"
+                  class="w-full bg-slate-800 border border-slate-700 rounded p-2 text-white text-sm outline-none"
+                />
+                <div class="flex justify-between text-sm pt-1">
+                  <span class="text-gray-400">Troco:</span>
+                  <span id="txt-troco" class="text-amber-400 font-bold"
+                    >R$ 0,00</span
+                  >
+                </div>
+              </div>
+            </form>
 
             <div
               class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-2 mt-6"
             >
               <div
-                class="flex justify-between text-base font-bold text-white pt-2 border-t border-slate-800"
+                class="flex justify-between text-base font-bold text-white pt-2"
               >
-                <span>Total:</span>
-                <span id="txt-total" class="text-emerald-400 text-xl"
+                <span>Total a Pagar:</span>
+                <span id="txt-total" class="text-emerald-400 text-2xl"
                   >R$ 0,00</span
                 >
               </div>
@@ -140,14 +213,165 @@
           </div>
 
           <button
-            type="submit"
-            form="form-venda"
-            class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-semibold py-3.5 rounded-xl transition"
+            type="button"
+            onclick="finalizarVenda()"
+            class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-semibold py-3.5 rounded-xl transition mt-4"
           >
-            Finalizar Venda
+            Finalizar Venda / Receber
           </button>
         </div>
       </div>
     </div>
+
+    <!-- Script de Gestão Dinâmica do PDV -->
+    <script>
+      let carrinho = [];
+
+      function adicionarProdutoAvulso() {
+        const select = document.getElementById("select_produto");
+        const produtoId = select.value;
+        if (!produtoId) {
+          alert("Selecione um produto.");
+          return;
+        }
+
+        const option = select.options[select.selectedIndex];
+        const nomeCompleto = option.text;
+        // Pega o nome do produto de forma segura cortando antes de (Estoque
+        const nomeProduto = nomeCompleto.split(" - ")[1].split(" (Estoque")[0];
+        const precoUnitario = parseFloat(option.getAttribute("data-preco"));
+        const quantidade =
+          parseInt(document.getElementById("qtd_produto").value) || 1;
+
+        let itemExistente = carrinho.find((item) => item.id === produtoId);
+        if (itemExistente) {
+          itemExistente.quantidade += quantidade;
+        } else {
+          carrinho.push({
+            id: produtoId,
+            nome: nomeProduto,
+            preco: precoUnitario,
+            quantidade: quantidade,
+          });
+        }
+
+        atualizarCarrinho();
+      }
+
+      function carregarItensPedido() {
+        const pedidoId = document.getElementById("select_pedido").value;
+        if (!pedidoId) {
+          alert("Selecione um pedido válido.");
+          return;
+        }
+
+        fetch(`/api/financeiro/pedidos/${pedidoId}/`)
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.itens && data.itens.length > 0) {
+              data.itens.forEach((item) => {
+                carrinho.push({
+                  id: item.produto,
+                  nome: item.produto_nome,
+                  preco: parseFloat(item.preco_unitario),
+                  quantidade: item.quantidade,
+                });
+              });
+              atualizarCarrinho();
+              alert("Itens do pedido importados com sucesso!");
+            } else {
+              alert("Este pedido não possui itens cadastrados.");
+            }
+          })
+          .catch((err) => {
+            console.error(err);
+            alert("Erro ao carregar o pedido.");
+          });
+      }
+
+      function removerItem(index) {
+        carrinho.splice(index, 1);
+        atualizarCarrinho();
+      }
+
+      function atualizarCarrinho() {
+        let tbody = document.getElementById("tabela-carrinho");
+        tbody.innerHTML = "";
+
+        if (carrinho.length === 0) {
+          tbody.innerHTML =
+            '<tr><td colspan="5" class="p-4 text-center text-gray-500">Nenhum item adicionado ao caixa.</td></tr>';
+          document.getElementById("txt-total").innerText = "R$ 0,00";
+          calcularTroco();
+          return;
+        }
+
+        let totalGeral = 0;
+        carrinho.forEach((item, index) => {
+          let totalItem = item.quantidade * item.preco;
+          totalGeral += totalItem;
+
+          let tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td class="p-3">${item.nome}</td>
+            <td class="p-3 text-center">${item.quantidade}</td>
+            <td class="p-3 text-right">R$ ${item.preco.toFixed(2)}</td>
+            <td class="p-3 text-right">R$ ${totalItem.toFixed(2)}</td>
+            <td class="p-3 text-center">
+              <button onclick="removerItem(${index})" class="text-rose-400 hover:text-rose-300 text-xs bg-rose-500/10 px-2 py-1 rounded">Remover</button>
+            </td>
+          `;
+          tbody.appendChild(tr);
+        });
+
+        document.getElementById("txt-total").innerText =
+          `R$ ${totalGeral.toFixed(2)}`;
+        calcularTroco();
+      }
+
+      function verificarDinheiro() {
+        const forma = document.getElementById("forma_pagamento").value;
+        const blocoDinheiro = document.getElementById("bloco-dinheiro");
+        if (forma === "dinheiro") {
+          blocoDinheiro.style.display = "block";
+        } else {
+          blocoDinheiro.style.display = "none";
+          document.getElementById("txt-troco").innerText = "R$ 0,00";
+        }
+      }
+
+      function calcularTroco() {
+        const forma = document.getElementById("forma_pagamento").value;
+        if (forma !== "dinheiro") return;
+
+        let totalGeral = carrinho.reduce(
+          (acc, item) => acc + item.quantidade * item.preco,
+          0,
+        );
+        let recebido =
+          parseFloat(document.getElementById("valor_recebido").value) || 0;
+        let troco = recebido - totalGeral;
+
+        const txtTroco = document.getElementById("txt-troco");
+        if (troco >= 0) {
+          txtTroco.innerText = `R$ ${troco.toFixed(2)}`;
+          txtTroco.className = "text-emerald-400 font-bold";
+        } else {
+          txtTroco.innerText = "Valor insuficiente";
+          txtTroco.className = "text-rose-400 font-bold";
+        }
+      }
+
+      function finalizarVenda() {
+        if (carrinho.length === 0) {
+          alert("Adicione produtos ou importe um pedido antes de finalizar.");
+          return;
+        }
+        alert("Venda finalizada com sucesso!");
+        carrinho = [];
+        atualizarCarrinho();
+        window.location.reload();
+      }
+    </script>
   </body>
 </html>

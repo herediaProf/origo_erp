@@ -11,15 +11,19 @@ def lista_estoque_view(request):
         form = ProdutoForm(request.POST)
         if form.is_valid():
             form.save()
-            return redirect(
-                "estoque:estoque_lista"
-            )  # Ajuste o namespace conforme seu urls.py se necessário
+            return redirect("estoque:estoque_lista")
     else:
         form = ProdutoForm()
 
-    itens = Produto.objects.select_related("categoria").all().order_by("-id")
+    # 'produtos' usado para manter compatibilidade direta com a listagem da tabela HTML
+    produtos = Produto.objects.select_related("categoria").all().order_by("-id")
 
-    context = {"itens": itens, "titulo": "Gestão de Estoque e Produtos", "form": form}
+    context = {
+        "produtos": produtos,
+        "itens": produtos,  # Mantido caso algum outro template use 'itens'
+        "titulo": "Gestão de Estoque e Produtos",
+        "form": form,
+    }
     return render(request, "estoque/lista_estoque.html", context)
 
 

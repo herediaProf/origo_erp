@@ -1,96 +1,144 @@
 <!doctype html>
-<html lang="pt-br">
+<html lang="pt-br" class="dark">
   <head>
     <meta charset="UTF-8" />
-    <title>Relógio de Ponto</title>
-    <style>
-      body {
-        background-color: #0d1117;
-        color: #c9d1d9;
-        font-family: Arial, sans-serif;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100vh;
-        margin: 0;
-      }
-      .card {
-        background: #161b22;
-        padding: 30px;
-        border-radius: 12px;
-        border: 1px solid #30363d;
-        text-align: center;
-        width: 400px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
-      }
-      #relogio {
-        font-size: 42px;
-        font-weight: bold;
-        color: #58a6ff;
-        margin: 20px 0;
-      }
-      .btn {
-        padding: 12px 20px;
-        font-size: 16px;
-        font-weight: bold;
-        border-radius: 6px;
-        border: none;
-        cursor: pointer;
-        width: 100%;
-        margin-top: 10px;
-      }
-      .btn-entrada {
-        background-color: #238636;
-        color: #fff;
-      }
-      .btn-saida {
-        background-color: #da3633;
-        color: #fff;
-      }
-      .btn-voltar {
-        background-color: #30363d;
-        color: #c9d1d9;
-        text-decoration: none;
-        display: inline-block;
-        margin-top: 15px;
-      }
-    </style>
-  </head>
-  <body>
-    <div class="card">
-      <h2>Relógio de Ponto</h2>
-      <div id="relogio">00:00:00</div>
-      <p id="data" style="color: #8b949e"></p>
-
-      <button
-        class="btn btn-entrada"
-        onclick="alert('Ponto de Entrada registrado com sucesso!')"
-      >
-        Registrar Entrada
-      </button>
-      <button
-        class="btn btn-saida"
-        onclick="alert('Ponto de Saída registrado com sucesso!')"
-      >
-        Registrar Saída
-      </button>
-
-      <br />
-      <a href="/dashboard/" class="btn-voltar">Voltar ao Dashboard</a>
-    </div>
-
+    <title>Relógio de Ponto - OrigoERP</title>
+    <!-- TailwindCSS e FontAwesome -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
     <script>
+      // Lógica do Relógio
       function atualizarRelogio() {
         const agora = new Date();
         document.getElementById("relogio").innerText =
           agora.toLocaleTimeString("pt-BR");
         document.getElementById("data").innerText = agora.toLocaleDateString(
           "pt-BR",
-          { weekday: "long", year: "numeric", month: "long", day: "numeric" },
+          {
+            weekday: "long",
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+          },
         );
       }
       setInterval(atualizarRelogio, 1000);
-      atualizarRelogio();
+
+      // Função para enviar os dados do ponto para o Django
+      function baterPonto(tipo) {
+        const funcionarioId =
+          document.getElementById("select-funcionario").value;
+
+        if (!funcionarioId) {
+          alert(
+            "Por favor, selecione um funcionário antes de registrar o ponto!",
+          );
+          return;
+        }
+
+        fetch("", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": "{{ csrf_token }}",
+          },
+          body: JSON.stringify({
+            funcionario_id: funcionarioId,
+            tipo: tipo,
+          }),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.sucesso) {
+              alert(data.mensagem);
+              document.getElementById("select-funcionario").value = ""; // Reseta o select
+            } else {
+              alert("Erro: " + data.mensagem);
+            }
+          })
+          .catch((error) => {
+            console.error("Erro:", error);
+            alert("Erro de conexão ao registrar o ponto.");
+          });
+      }
     </script>
+  </head>
+  <body
+    class="bg-slate-950 text-gray-100 min-h-screen p-6"
+    onload="atualizarRelogio()"
+  >
+    <div class="max-w-md mx-auto">
+      <!-- Cabeçalho -->
+      <div class="flex justify-between items-center mb-6">
+        <h1 class="text-2xl font-bold text-white flex items-center">
+          <i class="fa-solid fa-clock-rotate-left text-yellow-400 mr-2"></i>
+          Relógio
+        </h1>
+        <a href="/dashboard/" class="text-indigo-400 hover:underline text-sm"
+          ><i class="fa-solid fa-arrow-left mr-1"></i> Voltar</a
+        >
+      </div>
+
+      <!-- Card do Relógio -->
+      <div
+        class="bg-slate-900 rounded-xl p-8 shadow-lg border border-slate-800 text-center"
+      >
+        <div
+          id="relogio"
+          class="text-5xl font-bold text-blue-400 mb-2 font-mono"
+        >
+          00:00:00
+        </div>
+        <div id="data" class="text-gray-400 mb-6">Carregando data...</div>
+
+        <!-- Seleção de Funcionário -->
+        <div class="mb-6 text-left">
+          <label class="block text-sm text-gray-400 mb-2">Funcionário:</label>
+          <select
+            id="select-funcionario"
+            class="w-full bg-slate-800 border border-slate-700 text-white rounded-lg p-3 outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            <option value="">Selecione um funcionário...</option>
+            {% for func in funcionarios %}
+            <option value="{{ func.id }}">{{ func.nome }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <!-- Botões de Ação com chamada JS ajustada para os tipos do model -->
+        <div class="grid grid-cols-2 gap-3">
+          <button
+            onclick="baterPonto('ENTRADA')"
+            class="bg-green-600 hover:bg-green-700 p-3 rounded-lg font-bold transition flex items-center justify-center"
+          >
+            <i class="fa-solid fa-right-to-bracket mr-2"></i> Entrada
+          </button>
+
+          <button
+            onclick="baterPonto('SAIDA')"
+            class="bg-red-600 hover:bg-red-700 p-3 rounded-lg font-bold transition flex items-center justify-center"
+          >
+            <i class="fa-solid fa-right-from-bracket mr-2"></i> Saída
+          </button>
+
+          <button
+            onclick="baterPonto('SAIDA_ALMOCO')"
+            class="bg-yellow-600 hover:bg-yellow-700 p-3 rounded-lg font-bold transition flex items-center justify-center col-span-2"
+          >
+            <i class="fa-solid fa-utensils mr-2"></i> Saída Almoço / Retorno
+          </button>
+
+          <button
+            onclick="baterPonto('HORA_EXTRA')"
+            class="bg-purple-600 hover:bg-purple-700 p-3 rounded-lg font-bold transition flex items-center justify-center col-span-2"
+          >
+            <i class="fa-solid fa-plus-circle mr-2"></i> Hora Extra
+          </button>
+        </div>
+      </div>
+    </div>
   </body>
 </html>

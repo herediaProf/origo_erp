@@ -77,12 +77,21 @@
           </p>
         </div>
         <div>
+          <!-- Exemplo de Card Clicável -->
           <a
-            href="/api/pedidos/"
-            target="_blank"
-            class="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-lg text-sm font-medium transition"
+            href="/api/pedidos/pedidos/"
+            class="card-link"
+            style="text-decoration: none; color: inherit"
           >
-            Ver APIs REST
+            <div
+              class="card shadow-sm p-3 mb-4 bg-white rounded border-left-primary"
+            >
+              <h5 class="text-muted">Total de Pedidos</h5>
+              <h2 class="font-weight-bold">{{ total_pedidos }}</h2>
+              <span class="text-primary small"
+                >Ver todos os pedidos &rarr;</span
+              >
+            </div>
           </a>
         </div>
       </div>

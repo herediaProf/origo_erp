@@ -10,6 +10,7 @@ from .serializers import (
     RateioCaixinhaSerializer,
 )
 from pedidos.models import Pedido
+from produtos.models import Produto
 
 
 # ==========================================
@@ -64,7 +65,6 @@ def lista_caixas_view(request):
 @login_required
 def abrir_caixa_view(request):
     """Abre um novo caixa vinculado ao operador autenticado."""
-    # Verifica se já existe um caixa aberto para evitar duplicidade incorreta
     caixa_aberto = Caixa.objects.filter(status="aberto").first()
 
     if request.method == "POST":
@@ -73,7 +73,6 @@ def abrir_caixa_view(request):
 
         saldo_inicial = request.POST.get("saldo_inicial") or "0.00"
 
-        # Usa o usuário autenticado da requisição como operador
         Caixa.objects.create(
             operador=request.user, saldo_inicial=saldo_inicial, status="aberto"
         )
@@ -146,26 +145,19 @@ def salvar_venda_view(request, pk=None):
 
         pedido_obj = get_object_or_404(Pedido, pk=pedido_id)
 
-        if venda_obj:
-            # Edição de venda existente
-            venda_obj.pedido = pedido_obj
-            venda_obj.forma_pagamento = forma_pagamento
-            venda_obj.subtotal = subtotal
-            venda_obj.paga_taxa_servico = paga_taxa_servico
-            venda_obj.valor_taxa_servico = valor_taxa_servico
-            venda_obj.valor_total = valor_total
-            venda_obj.save()
-        else:
-            # Criação de nova venda usando o caixa ativo do sistema
-            Venda.objects.create(
-                pedido=pedido_obj,
-                caixa=caixa_ativo,
-                forma_pagamento=forma_pagamento,
-                subtotal=subtotal,
-                paga_taxa_servico=paga_taxa_servico,
-                valor_taxa_servico=valor_taxa_servico,
-                valor_total=valor_total,
-            )
+        # Utiliza update_or_create para respeitar a relação OneToOne com o Pedido
+        # Evita duplicidade e erros de chave única caso o pedido já tenha venda registrada.
+        Venda.objects.update_or_create(
+            pedido=pedido_obj,
+            defaults={
+                "caixa": venda_obj.caixa if venda_obj else caixa_ativo,
+                "forma_pagamento": forma_pagamento,
+                "subtotal": subtotal,
+                "paga_taxa_servico": paga_taxa_servico,
+                "valor_taxa_servico": valor_taxa_servico,
+                "valor_total": valor_total,
+            },
+        )
 
         return redirect("/api/financeiro/vendas-view/")
 
@@ -184,3 +176,61 @@ def deletar_venda_view(request, pk):
     venda = get_object_or_404(Venda, pk=pk)
     venda.delete()
     return redirect("/api/financeiro/vendas-view/")
+
+
+@login_required
+def salvar_venda_view(request, pk=None):
+    """Registra ou edita uma venda vinculando-a obrigatoriamente a um caixa aberto."""
+    venda_obj = get_object_or_404(Venda, pk=pk) if pk else None
+
+    caixa_ativo = Caixa.objects.filter(status="aberto").first()
+    if not caixa_ativo and not venda_obj:
+        return redirect("/api/financeiro/caixas-view/abrir/")
+
+    pedidos_disponiveis = Pedido.objects.all()
+    produtos_disponiveis = Produto.objects.all()  # <- Produtos resgatados do banco
+
+    if request.method == "POST":
+        pedido_id = request.POST.get("pedido_id")
+
+        if not pedido_id:
+            context = {
+                "venda": venda_obj,
+                "caixa_ativo": caixa_ativo,
+                "pedidos": pedidos_disponiveis,
+                "produtos": produtos_disponiveis,
+                "erro": "Você precisa selecionar um pedido válido para registrar a venda.",
+            }
+            return render(request, "financeiro/form_venda.html", context)
+
+        forma_pagamento = request.POST.get("forma_pagamento", "dinheiro")
+        subtotal = request.POST.get("subtotal") or "0.00"
+        paga_taxa_servico = (
+            True if request.POST.get("paga_taxa_servico") == "on" else False
+        )
+        valor_taxa_servico = request.POST.get("valor_taxa_servico") or "0.00"
+        valor_total = request.POST.get("valor_total") or subtotal
+
+        pedido_obj = get_object_or_404(Pedido, pk=pedido_id)
+
+        Venda.objects.update_or_create(
+            pedido=pedido_obj,
+            defaults={
+                "caixa": venda_obj.caixa if venda_obj else caixa_ativo,
+                "forma_pagamento": forma_pagamento,
+                "subtotal": subtotal,
+                "paga_taxa_servico": paga_taxa_servico,
+                "valor_taxa_servico": valor_taxa_servico,
+                "valor_total": valor_total,
+            },
+        )
+
+        return redirect("/api/financeiro/vendas-view/")
+
+    context = {
+        "venda": venda_obj,
+        "caixa_ativo": caixa_ativo,
+        "pedidos": pedidos_disponiveis,
+        "produtos": produtos_disponiveis,  # <- Disponível no template HTML de vendas
+    }
+    return render(request, "financeiro/form_venda.html", context)

@@ -1,67 +1,18 @@
 from django.contrib import admin
-from .models import Caixa, Venda, RateioCaixinha
-
-
-class VendaInline(admin.TabularInline):
-    model = Venda
-    extra = 0
-    readonly_fields = ("subtotal", "valor_taxa_servico", "valor_total", "data_venda")
-    can_delete = False
-    show_change_link = True
-
-
-@admin.register(Caixa)
-class CaixaAdmin(admin.ModelAdmin):
-    list_display = (
-        "id",
-        "operador",
-        "status",
-        "saldo_inicial",
-        "saldo_final_dinheiro",
-        "data_abertura",
-        "data_fechamento",
-    )
-    list_filter = ("status", "data_abertura")
-    search_fields = ("operador__username", "operador__first_name", "id")
-    date_hierarchy = "data_abertura"
-    readonly_fields = ("data_abertura",)
-    inlines = [VendaInline]
+from .models import Venda, Caixa
 
 
 @admin.register(Venda)
 class VendaAdmin(admin.ModelAdmin):
     list_display = (
         "id",
-        "pedido",
-        "caixa",
-        "forma_pagamento",
-        "subtotal",
-        "valor_taxa_servico",
-        "valor_total",
-        "data_venda",
+        "data_venda" if hasattr(Venda, "data_venda") else "id",
+        "forma_pagamento" if hasattr(Venda, "forma_pagamento") else "id",
     )
-    list_filter = ("forma_pagamento", "paga_taxa_servico", "data_venda")
-    search_fields = ("id", "pedido__id", "caixa__id")
-    date_hierarchy = "data_venda"
-    readonly_fields = ("data_venda",)
+    search_fields = ("id",)
 
 
-@admin.register(RateioCaixinha)
-class RateioCaixinhaAdmin(admin.ModelAdmin):
-    list_display = (
-        "caixa",
-        "valor_total_caixinha",
-        "total_funcionarios_ativos",
-        "valor_por_funcionario",
-        "data_rateio",
-    )
-    list_filter = ("data_rateio",)
-    search_fields = ("caixa__id",)
-    date_hierarchy = "data_rateio"
-    readonly_fields = (
-        "caixa",
-        "valor_total_caixinha",
-        "total_funcionarios_ativos",
-        "valor_por_funcionario",
-        "data_rateio",
-    )
+@admin.register(Caixa)
+class CaixaAdmin(admin.ModelAdmin):
+    list_display = ("id", "operador", "status", "data_abertura", "data_fechamento")
+    list_filter = ("status", "data_abertura")
